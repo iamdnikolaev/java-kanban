@@ -1,0 +1,47 @@
+/**
+ * Класс подзадач
+ * @version 1.0
+ * @author Николаев Д.В.
+ */
+public class Subtask extends Task {
+    /** Поле идентификатора эпика, чьей подзадачей является */
+    private int epicId;
+
+    /** Конструктор подзадачи с параметрами без указания статуса. По умолчанию, NEW.
+     * @param name название
+     * @param description описание
+     * @param id идентификатор
+     * @param epicId идентификатор эпика
+     */
+    public Subtask(String name, String description, int id, int epicId) {
+        super(name, description, id, TaskStatus.NEW);
+        this.epicId = epicId;
+    }
+
+    /** Конструктор подзадачи с параметрами с указанием текущего статуса.
+     * @param name название
+     * @param description описание
+     * @param id идентификатор
+     * @param status текущий статус
+     * @param epicId идентификатор эпика
+     */
+    public Subtask(String name, String description, int id, TaskStatus status, int epicId) {
+        super(name, description, id, status);
+        this.epicId = epicId;
+    }
+
+    public int getEpicId() {
+        return epicId;
+    }
+
+    @Override
+    public String toString() {
+        return "Subtask{" +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", id=" + id +
+                ", status=" + status +
+                ", epicId=" + epicId +
+                '}';
+    }
+}
