@@ -2,23 +2,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * Планировщик задач
- * @version 1.0
+ * Трекер задач
+ * @version 2.0
  * @author Николаев Д.В.
  */
 public class TaskManager {
     /** Поле счетчика для генерации идентификаторов методом {@link TaskManager#getNextId()} */
     private int idCounter;
-    /** Поле хэш-таблица задач */
+    /** Поле хранилище задач */
     private HashMap<Integer, Task> tasks = new HashMap<>();
-    /** Поле хэш-таблица подзадач */
+    /** Поле хранилище подзадач */
     private HashMap<Integer, Subtask> subtasks = new HashMap<>();
-    /** Поле хэш-таблица эпиков */
+    /** Поле хранилище эпиков */
     private HashMap<Integer, Epic> epics = new HashMap<>();
 
     /** Метод сквозной генерации идентификаторов объектов учета (задач, подзадач, эпиков), используя поле {@link TaskManager#idCounter}
      * @return int целочисленный идентификатор */
-    public int getNextId() {
+    private int getNextId() {
         return ++idCounter;
     }
 
@@ -55,27 +55,28 @@ public class TaskManager {
         return result;
     }
 
-    /** Метод очистки таблицы задач {@link TaskManager#tasks} */
+    /** Метод очистки хранилища задач {@link TaskManager#tasks} */
     public void clearAllTasks() {
         tasks.clear();
     }
 
-    /** Метод очистки таблицы подзадач {@link TaskManager#subtasks}, затрагивая поле эпиков {@link Epic#subtasks} */
+    /** Метод очистки хранилища подзадач {@link TaskManager#subtasks}, затрагивая список у эпиков */
     public void clearAllSubtasks() {
-        subtasks.clear();
-        for (Epic epic : epics.values()) {
-            epic.subtasks.clear();
-            epic.refreshStatus();
+        if (!subtasks.isEmpty()) {
+            for (Epic epic : epics.values()) {
+                epic.clearSubtasks();
+            }
+            subtasks.clear();
         }
     }
 
-    /** Метод очистки таблицы эпиков {@link TaskManager#epics}, включая и таблицу подзадач {@link TaskManager#subtasks} */
+    /** Метод очистки хранилища эпиков {@link TaskManager#epics}, включая и хранилище подзадач {@link TaskManager#subtasks} */
     public void clearAllEpics() {
         epics.clear();
         subtasks.clear();
     }
 
-    /** Метод получения объекта задачи по ее идентификатору {@link Task#id} в таблице {@link TaskManager#tasks}
+    /** Метод получения объекта задачи по ее идентификатору {@link Task#id} в хранилище {@link TaskManager#tasks}
      * @param taskId идентификатор задачи
      * @return {@link Task} объект задачи
      */
@@ -83,7 +84,7 @@ public class TaskManager {
         return tasks.get(taskId);
     }
 
-    /** Метод получения объекта подзадачи по ее идентификатору {@link Subtask#id} в таблице {@link TaskManager#subtasks}
+    /** Метод получения объекта подзадачи по ее идентификатору {@link Subtask#id} в хранилище {@link TaskManager#subtasks}
      * @param subtaskId идентификатор подзадачи
      * @return {@link Subtask} объект подзадачи
      */
@@ -91,7 +92,7 @@ public class TaskManager {
         return subtasks.get(subtaskId);
     }
 
-    /** Метод получения объекта эпика по его идентификатору {@link Epic#id} в таблице {@link TaskManager#epics}
+    /** Метод получения объекта эпика по его идентификатору {@link Epic#id} в хранилище {@link TaskManager#epics}
      * @param epicId идентификатор эпика
      * @return {@link Epic} объект эпика
      */
@@ -99,88 +100,90 @@ public class TaskManager {
         return epics.get(epicId);
     }
 
-    /** Метод добавления объекта задачи в таблицу {@link TaskManager#tasks}
-     * @param task добавляемая задача
+    /** Метод добавления задачи в хранилище {@link TaskManager#tasks}
+     * @param task задача с атрибутми для добавления
+     * @return созданная задача - объект {@link Task}
      */
-    public void createTask(Task task) {
+    public Task createTask(Task task) {
+        Task newTask = null;
         if (task != null) {
-            tasks.put(task.id, task);
+            newTask = new Task(task.getName(), task.getDescription(), getNextId());
+            tasks.put(newTask.getId(), newTask);
         }
+        return newTask;
     }
 
-    /** Метод добавления объекта подзадачи в таблицу {@link TaskManager#subtasks}, если указанный эпик существует в {@link TaskManager#epics}
-     * @param subtask добавляемая подзадача
+    /** Метод добавления подзадачи в хранилище {@link TaskManager#subtasks} с занесением в список у назначеннго эпика
+     * @param subtask подзадача с атрибутми для добавления
+     * @return созданная подзадача - объект {@link Subtask}
      */
-    public void createSubtask(Subtask subtask) {
+    public Subtask createSubtask(Subtask subtask) {
+        Subtask newSubtask = null;
         if (subtask != null) {
             Epic epic = epics.get(subtask.getEpicId());
             if (epic != null) {
-                subtasks.put(subtask.id, subtask);
-                if (epic.subtasks != null) {
-                    epic.subtasks.remove(subtask);
-                    epic.subtasks.add(subtask);
-                }
-                epic.refreshStatus();
+                newSubtask = new Subtask(subtask.getName(), subtask.getDescription(), getNextId(), subtask.getEpicId());
+                epic.createOrUpdateSubtask(newSubtask, subtasks);
             }
         }
+        return newSubtask;
     }
 
-    /** Метод добавления объекта эпика в таблицу {@link TaskManager#epics}
-     * @param epic добавляемый эпик
+    /** Метод добавления эпика в хранилище {@link TaskManager#epics}
+     * @param epic эпик с атрибутми для добавления
+     * @return созданный эпик - объект {@link Epic}
      */
-    public void createEpic(Epic epic) {
+    public Epic createEpic(Epic epic) {
+        Epic newEpic = null;
         if (epic != null) {
-            epics.put(epic.id, epic);
+            newEpic = new Epic(epic.getName(), epic.getDescription(), getNextId());
+            epics.put(newEpic.getId(), newEpic);
         }
+        return newEpic;
     }
 
-    /** Метод изменения объекта задачи в таблице {@link TaskManager#tasks}
+    /** Метод изменения задачи в хранилище {@link TaskManager#tasks}
      * @param task задача с обновленными атрибутами
      */
     public void updateTask(Task task) {
-        if (task != null) {
-            tasks.put(task.id, task);
+        if (task != null && tasks.containsKey(task.getId())) {
+            tasks.put(task.getId(), task);
         }
     }
 
-    /** Метод изменения объекта подзадачи в таблице {@link TaskManager#subtasks}, затрагивая и поле своего эпика {@link Epic#subtasks}
-     * с обновлением статуса этого эпика.
+    /** Метод изменения подзадачи в хранилище {@link TaskManager#subtasks}
      * @param subtask подзадача с обновленными атрибутами
      */
     public void updateSubtask(Subtask subtask) {
-        if (subtask != null) {
+        if (subtask != null && subtasks.containsKey(subtask.getId())) {
             Epic epic = epics.get(subtask.getEpicId());
             if (epic != null) {
-                subtasks.put(subtask.id, subtask);
-                if (epic.subtasks != null) {
-                    epic.subtasks.remove(subtask);
-                    epic.subtasks.add(subtask);
-                }
-                epic.refreshStatus();
+                epic.createOrUpdateSubtask(subtask, subtasks);
             }
         }
     }
 
-    /** Метод изменения объекта эпика в таблице {@link TaskManager#epics}
+    /** Метод изменения эпика в хранилище {@link TaskManager#epics}.
+     * Не затрагивает его статус и список подзадач.
      * @param epic эпик с обновленными атрибутами
      */
     public void updateEpic(Epic epic) {
-        if (epic != null) {
-            epics.put(epic.id, epic);
-            epic.refreshStatus();
+        if (epic != null && epics.containsKey(epic.getId())) {
+            Epic epicTarget = epics.get(epic.getId());
+            epicTarget.setName(epic.getName());
+            epicTarget.setDescription(epic.getDescription());
+            epics.put(epicTarget.getId(), epicTarget);
         }
     }
 
-    /** Метод удаления объекта задачи в таблице {@link TaskManager#tasks} по идентификатору
+    /** Метод удаления задачи из хранилища {@link TaskManager#tasks} по идентификатору
      * @param taskId удаляемая задача
      */
     public void removeTask(int taskId) {
         tasks.remove(taskId);
     }
 
-    /** Метод удаления объекта подзадачи в таблице {@link TaskManager#subtasks} по идентификатору,
-     * затрагивая и поле своего эпика {@link Epic#subtasks}
-     * с обновлением статуса этого эпика
+    /** Метод удаления подзадачи из хранилища по идентификатору {@link TaskManager#subtasks} и у своего эпика
      * @param subtaskId удаляемая подзадача
      */
     public void removeSubtask(int subtaskId) {
@@ -188,21 +191,19 @@ public class TaskManager {
         if (subtask != null) {
             Epic epic = epics.get(subtask.getEpicId());
             if (epic != null) {
-                epic.subtasks.remove(subtask);
-                epic.refreshStatus();
+                epic.removeSubtask(subtaskId, subtasks);
             }
-            subtasks.remove(subtaskId);
         }
     }
 
-    /** Метод удаления объекта эпика в таблице {@link TaskManager#epics} по идентификатору,
+    /** Метод удаления эпика из хранилища {@link TaskManager#epics} по идентификатору,
      * @param epicId удаляемый эпик
      */
     public void removeEpic(int epicId) {
         Epic epic = epics.get(epicId);
         if (epic != null) {
-            for (Subtask subtask : epic.subtasks) {
-                subtasks.remove(subtask.id);
+            for (Integer subtaskId : epic.getSubtaskList()) {
+                subtasks.remove(subtaskId);
             }
             epics.remove(epicId);
         }
@@ -216,7 +217,8 @@ public class TaskManager {
         ArrayList<Subtask> result = new ArrayList<>();
         Epic epic = epics.get(epicId);
         if (epic != null) {
-            for (Subtask subtask : epic.subtasks) {
+            for (Integer subtaskId : epic.getSubtaskList()) {
+                Subtask subtask = subtasks.get(subtaskId);
                 if (subtask != null) {
                     result.add(subtask);
                 }
@@ -225,19 +227,25 @@ public class TaskManager {
         return result;
     }
 
-    /** Метод получения списка подзадач объекта эпика
+    /** Метод получения списка подзадач эпика
      * @param epic эпик для обработки
      * @return ArrayList<Subtask> список подзадач
      */
     public ArrayList<Subtask> getSubtasksByEpic(Epic epic) {
         ArrayList<Subtask> result = new ArrayList<>();
         if (epic != null) {
-            for (Subtask subtask : epic.subtasks) {
-                if (subtask != null) {
-                    result.add(subtask);
-                }
-            }
+            result = getSubtasksByEpicId(epic.getId());
         }
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "TaskManager{" +
+                "idCounter=" + idCounter +
+                ", tasks=" + tasks +
+                ", subtasks=" + subtasks +
+                ", epics=" + epics +
+                '}';
     }
 }

@@ -4,22 +4,22 @@ public class Main {
         System.out.println("Поехали!");
         TaskManager taskManager = new TaskManager();
 
-        Task task1 = new Task("Задача 1", "Описание задачи 1", taskManager.getNextId());
-        taskManager.createTask(task1);
-        Task task2 = new Task("Задача 2", "Описание задачи 2", taskManager.getNextId());
-        taskManager.createTask(task2);
+        Task task1 = new Task("Задача 1", "Описание задачи 1");
+        task1 = taskManager.createTask(task1);
+        Task task2 = new Task("Задача 2", "Описание задачи 2");
+        task2 = taskManager.createTask(task2);
 
-        Epic epic1 = new Epic("Эпик 1", "Описание эпика 1", taskManager.getNextId());
-        taskManager.createEpic(epic1);
-        Subtask subtask11 = new Subtask("Подзадача 1_1", "Описание подзадачи 1_1", taskManager.getNextId(), epic1.getId());
-        taskManager.createSubtask(subtask11);
-        Subtask subtask12 = new Subtask("Подзадача 1_2", "Описание подзадачи 1_2", taskManager.getNextId(), epic1.getId());
-        taskManager.createSubtask(subtask12);
+        Epic epic1 = new Epic("Эпик 1", "Описание эпика 1");
+        epic1 = taskManager.createEpic(epic1);
+        Subtask subtask11 = new Subtask("Подзадача 1_1", "Описание подзадачи 1_1", epic1.getId());
+        subtask11 = taskManager.createSubtask(subtask11);
+        Subtask subtask12 = new Subtask("Подзадача 1_2", "Описание подзадачи 1_2", epic1.getId());
+        subtask12 = taskManager.createSubtask(subtask12);
 
-        Epic epic2 = new Epic("Эпик 2", "Описание эпика 2", taskManager.getNextId());
-        taskManager.createEpic(epic2);
-        Subtask subtask21 = new Subtask("Подзадача 2_1", "Описание подзадачи 2_1", taskManager.getNextId(), epic2.getId());
-        taskManager.createSubtask(subtask21);
+        Epic epic2 = new Epic("Эпик 2", "Описание эпика 2");
+        epic2 = taskManager.createEpic(epic2);
+        Subtask subtask21 = new Subtask("Подзадача 2_1", "Описание подзадачи 2_1", epic2.getId());
+        subtask21 = taskManager.createSubtask(subtask21);
 
         System.out.println("\nИсходное состояние объектов:");
         System.out.println(taskManager.getAllTasks());

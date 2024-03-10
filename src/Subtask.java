@@ -1,6 +1,6 @@
 /**
  * Класс подзадач
- * @version 1.0
+ * @version 2.0
  * @author Николаев Д.В.
  */
 public class Subtask extends Task {
@@ -27,6 +27,27 @@ public class Subtask extends Task {
      */
     public Subtask(String name, String description, int id, TaskStatus status, int epicId) {
         super(name, description, id, status);
+        this.epicId = epicId;
+    }
+
+    /** Конструктор подзадачи со статусом NEW, без id для прикладных целей
+     * @param name название
+     * @param description описание
+     * @param epicId идентификатор эпика
+     */
+    public Subtask(String name, String description, int epicId) {
+        super(name, description, TaskStatus.NEW);
+        this.epicId = epicId;
+    }
+
+    /** Конструктор подзадачи с указанием текущего статуса, но без id для прикладных целей
+     * @param name название
+     * @param description описание
+     * @param status текущий статус
+     * @param epicId идентификатор эпика
+     */
+    public Subtask(String name, String description, TaskStatus status, int epicId) {
+        super(name, description, status);
         this.epicId = epicId;
     }
 

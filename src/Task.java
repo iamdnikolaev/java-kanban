@@ -2,7 +2,7 @@ import java.util.Objects;
 
 /**
  * Класс задач
- * @version 1.0
+ * @version 2.0
  * @author Николаев Д.В.
  */
 public class Task {
@@ -37,6 +37,29 @@ public class Task {
         this.name = name;
         this.description = description;
         this.id = id;
+        this.status = status;
+    }
+
+    /** Конструктор задачи со статусом NEW, без id для прикладных целей
+     * @param name название
+     * @param description описание
+     */
+    public Task(String name, String description) {
+        this.name = name;
+        this.description = description;
+        this.id = 0;
+        this.status = TaskStatus.NEW;
+    }
+
+    /** Конструктор задачи с указанием текущего статуса, но без id для прикладных целей
+     * @param name название
+     * @param description описание
+     * @param status текущий статус
+     */
+    public Task(String name, String description, TaskStatus status) {
+        this.name = name;
+        this.description = description;
+        this.id = 0;
         this.status = status;
     }
 
