@@ -3,7 +3,7 @@ import java.util.HashMap;
 
 /**
  * Класс эпиков
- * @version 2.0
+ * @version 2.5
  * @author Николаев Д.В.
  */
 public class Epic extends Task{
@@ -41,7 +41,7 @@ public class Epic extends Task{
     }
 
     public ArrayList<Integer> getSubtaskList() {
-        return subtaskList;
+        return new ArrayList<>(subtaskList);
     }
 
     /** Метод обновления статуса эпика согласно статусам его подзадач
@@ -49,7 +49,7 @@ public class Epic extends Task{
     private void refreshStatus(HashMap<Integer, Subtask> subtasks) {
         TaskStatus newStatus = TaskStatus.NEW;
         int numberOfSubtasks = subtaskList.size();
-        if (numberOfSubtasks > 0) {
+        if (numberOfSubtasks > 0 && subtasks != null) {
             HashMap<TaskStatus, Integer> statusCounterMap = new HashMap<>();
             for (Subtask subtask : subtasks.values()) {
                 if (subtask.getEpicId() == id) { // Перебираем подзадачи нашего эпика
@@ -74,32 +74,31 @@ public class Epic extends Task{
         status = newStatus;
     }
 
-    /** Метод удаления подзадачи из списка у эпика и общего хранилища
+    /** Метод удаления подзадачи из списка у эпика с обновлением его статуса
      * @param subtaskId идентификатор подзадачи
      * @param subtasks общее хранилище подзадач
      */
     public void removeSubtask(Integer subtaskId, HashMap<Integer, Subtask> subtasks) {
-        if (subtasks != null && subtasks.containsKey(subtaskId) && subtaskList.contains(subtaskId)) {
-            subtasks.remove(subtaskId);
+        if (subtasks != null && subtaskList.contains(subtaskId)) {
             subtaskList.remove(subtaskId);
             refreshStatus(subtasks);
         }
     }
 
-    /** Метод очистка списка подзадач у эпика
+    /** Метод очистки списка подзадач у эпика
      */
     public void clearSubtasks() {
         subtaskList.clear();
-        status = TaskStatus.NEW;
+        refreshStatus(null);
     }
 
-    /** Метод создания/изменения подзадачи в списке у эпика и общем хранилище
+    /** Метод добавления подзадачи в список у эпика с обновлением его статуса.
+     * Добавляется в случае ее отсутствия в списке.
      * @param subtask объект подзадачи
      * @param subtasks общее хранилище подзадач
      */
-    public void createOrUpdateSubtask(Subtask subtask, HashMap<Integer, Subtask> subtasks) {
+    public void addSubtask(Subtask subtask, HashMap<Integer, Subtask> subtasks) {
         if (subtask != null && subtasks != null) {
-            subtasks.put(subtask.getId(), subtask);
             if (!subtaskList.contains(subtask.getId())) {
                 subtaskList.add(subtask.getId());
             }
