@@ -3,7 +3,7 @@ import java.util.HashMap;
 
 /**
  * Трекер задач
- * @version 2.5
+ * @version 2.6
  * @author Николаев Д.В.
  */
 public class TaskManager {
@@ -106,7 +106,7 @@ public class TaskManager {
      */
     public Task createTask(Task task) {
         if (task != null) {
-            task = new Task(task.getName(), task.getDescription(), getNextId());
+            task.setId(getNextId());
             tasks.put(task.getId(), task);
         }
         return task;
@@ -120,7 +120,7 @@ public class TaskManager {
         if (subtask != null) {
             Epic epic = epics.get(subtask.getEpicId());
             if (epic != null) {
-                subtask = new Subtask(subtask.getName(), subtask.getDescription(), getNextId(), subtask.getEpicId());
+                subtask.setId(getNextId());
                 subtasks.put(subtask.getId(), subtask);
                 epic.addSubtask(subtask, subtasks);
             }
@@ -134,7 +134,7 @@ public class TaskManager {
      */
     public Epic createEpic(Epic epic) {
         if (epic != null) {
-            epic = new Epic(epic.getName(), epic.getDescription(), getNextId());
+            epic.setId(getNextId());
             epics.put(epic.getId(), epic);
         }
         return epic;
