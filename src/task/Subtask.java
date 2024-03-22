@@ -1,3 +1,5 @@
+package task;
+
 /**
  * Класс подзадач
  * @version 2.0
@@ -57,7 +59,7 @@ public class Subtask extends Task {
 
     @Override
     public String toString() {
-        return "Subtask{" +
+        return "task.Subtask{" +
                 "name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", id=" + id +

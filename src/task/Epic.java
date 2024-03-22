@@ -1,3 +1,5 @@
+package task;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -6,7 +8,7 @@ import java.util.HashMap;
  * @version 2.5
  * @author Николаев Д.В.
  */
-public class Epic extends Task{
+public class Epic extends Task {
     /** Поле список id подзадач эпика */
     private ArrayList<Integer> subtaskList;
 
@@ -31,7 +33,7 @@ public class Epic extends Task{
 
     @Override
     public String toString() {
-        return "Epic{" +
+        return "task.Epic{" +
                 "name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", id=" + id +

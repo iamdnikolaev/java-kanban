@@ -13,6 +13,9 @@
 # IDEA config files
 .idea/
 
+# 
+lib/
+
 # Package Files #
 *.jar
 *.war
