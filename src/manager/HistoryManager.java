@@ -1,13 +1,13 @@
 package manager;
 
 import task.Task;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Интерфейс менеджеров истории просмотра объектов учета (задач, подзадач, эпиков)
  *
  * @author Николаев Д.В.
- * @version 1.0
+ * @version 1.1
  */
 public interface HistoryManager {
     /**
@@ -17,5 +17,5 @@ public interface HistoryManager {
 
     void add(Task task);
 
-    ArrayList<Task> getHistory();
+    List<Task> getHistory();
 }

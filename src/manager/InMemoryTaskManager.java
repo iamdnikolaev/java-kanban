@@ -6,12 +6,14 @@ import task.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Менеджер задач - реализация интерфейса {@link TaskManager}
  *
  * @author Николаев Д.В.
- * @version 1.0
+ * @version 1.1
  */
 public class InMemoryTaskManager implements TaskManager {
     /**
@@ -21,15 +23,15 @@ public class InMemoryTaskManager implements TaskManager {
     /**
      * Поле хранилище задач
      */
-    private HashMap<Integer, Task> tasks = new HashMap<>();
+    private Map<Integer, Task> tasks = new HashMap<>();
     /**
      * Поле хранилище подзадач
      */
-    private HashMap<Integer, Subtask> subtasks = new HashMap<>();
+    private Map<Integer, Subtask> subtasks = new HashMap<>();
     /**
      * Поле хранилище эпиков
      */
-    private HashMap<Integer, Epic> epics = new HashMap<>();
+    private Map<Integer, Epic> epics = new HashMap<>();
 
     /**
      * Поле менеджера истории просмотра объектов учета (задач, подзадач, эпиков)
@@ -61,8 +63,8 @@ public class InMemoryTaskManager implements TaskManager {
      * @return ArrayList<Task>
      */
     @Override
-    public ArrayList<Task> getAllTasks() {
-        ArrayList<Task> result = new ArrayList<>();
+    public List<Task> getAllTasks() {
+        List<Task> result = new ArrayList<>();
         for (Task task : tasks.values()) {
             result.add(task);
         }
@@ -75,8 +77,8 @@ public class InMemoryTaskManager implements TaskManager {
      * @return ArrayList<Subtask>
      */
     @Override
-    public ArrayList<Subtask> getAllSubtasks() {
-        ArrayList<Subtask> result = new ArrayList<>();
+    public List<Subtask> getAllSubtasks() {
+        List<Subtask> result = new ArrayList<>();
         for (Subtask subtask : subtasks.values()) {
             result.add(subtask);
         }
@@ -89,8 +91,8 @@ public class InMemoryTaskManager implements TaskManager {
      * @return ArrayList<Epic>
      */
     @Override
-    public ArrayList<Epic> getAllEpics() {
-        ArrayList<Epic> result = new ArrayList<>();
+    public List<Epic> getAllEpics() {
+        List<Epic> result = new ArrayList<>();
         for (Epic epic : epics.values()) {
             result.add(epic);
         }
@@ -306,8 +308,8 @@ public class InMemoryTaskManager implements TaskManager {
      * @return ArrayList<task.Subtask> список подзадач
      */
     @Override
-    public ArrayList<Subtask> getSubtasksByEpicId(int epicId) {
-        ArrayList<Subtask> result = new ArrayList<>();
+    public List<Subtask> getSubtasksByEpicId(int epicId) {
+        List<Subtask> result = new ArrayList<>();
         Epic epic = epics.get(epicId);
         if (epic != null) {
             for (Integer subtaskId : epic.getSubtaskList()) {
@@ -327,8 +329,8 @@ public class InMemoryTaskManager implements TaskManager {
      * @return ArrayList<task.Subtask> список подзадач
      */
     @Override
-    public ArrayList<Subtask> getSubtasksByEpic(Epic epic) {
-        ArrayList<Subtask> result = new ArrayList<>();
+    public List<Subtask> getSubtasksByEpic(Epic epic) {
+        List<Subtask> result = new ArrayList<>();
         if (epic != null) {
             result = getSubtasksByEpicId(epic.getId());
         }
@@ -341,7 +343,7 @@ public class InMemoryTaskManager implements TaskManager {
      * @return ArrayList<Task> список задач (подзадач, эпиков) в истории
      */
     @Override
-    public ArrayList<Task> getHistory() {
+    public List<Task> getHistory() {
         return historyManager.getHistory();
     }
 }

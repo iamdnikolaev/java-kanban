@@ -2,16 +2,20 @@ package manager;
 
 import task.Task;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Менеджер истории просмотра объектов учета (задач, подзадач, эпиков) - реализация интерфейса {@link HistoryManager}
  *
  * @author Николаев Д.В.
- * @version 1.0
+ * @version 1.1
  */
 public class InMemoryHistoryManager implements HistoryManager {
 
-    private ArrayList<Task> taskHistory = new ArrayList<>();
+    /**
+     * Поле список просмотренных объектов учета, включенных в историю согласно порядку обращения к ним через get-методы.
+     */
+    private List<Task> taskHistory = new ArrayList<>();
 
     @Override
     public String toString() {
@@ -41,7 +45,7 @@ public class InMemoryHistoryManager implements HistoryManager {
      * @return ArrayList<Task> список задач (подзадач, эпиков) в истории в порядке обращения к ним
      */
     @Override
-    public ArrayList<Task> getHistory() {
+    public List<Task> getHistory() {
         return new ArrayList<>(taskHistory);
     }
 }

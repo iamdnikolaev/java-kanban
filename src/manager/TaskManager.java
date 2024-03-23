@@ -3,20 +3,20 @@ package manager;
 import task.Epic;
 import task.Subtask;
 import task.Task;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Интерфейс менеджеров работы с объектами учета (задачами, подзадачами, эпиками)
  *
  * @author Николаев Д.В.
- * @version 1.0
+ * @version 1.1
  */
 public interface TaskManager {
-    ArrayList<Task> getAllTasks();
+    List<Task> getAllTasks();
 
-    ArrayList<Subtask> getAllSubtasks();
+    List<Subtask> getAllSubtasks();
 
-    ArrayList<Epic> getAllEpics();
+    List<Epic> getAllEpics();
 
     void clearAllTasks();
 
@@ -48,9 +48,9 @@ public interface TaskManager {
 
     void removeEpic(int epicId);
 
-    ArrayList<Subtask> getSubtasksByEpicId(int epicId);
+    List<Subtask> getSubtasksByEpicId(int epicId);
 
-    ArrayList<Subtask> getSubtasksByEpic(Epic epic);
+    List<Subtask> getSubtasksByEpic(Epic epic);
 
-    ArrayList<Task> getHistory();
+    List<Task> getHistory();
 }

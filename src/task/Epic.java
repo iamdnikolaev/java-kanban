@@ -2,10 +2,11 @@ package task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Класс эпиков
- * @version 2.5
+ * @version 2.6
  * @author Николаев Д.В.
  */
 public class Epic extends Task {
@@ -48,7 +49,7 @@ public class Epic extends Task {
 
     /** Метод обновления статуса эпика согласно статусам его подзадач
      * @param subtasks общее хранилище подзадач, среди которых перебираются свои согласно {@link Epic#subtaskList}*/
-    private void refreshStatus(HashMap<Integer, Subtask> subtasks) {
+    private void refreshStatus(Map<Integer, Subtask> subtasks) {
         TaskStatus newStatus = TaskStatus.NEW;
         int numberOfSubtasks = subtaskList.size();
         if (numberOfSubtasks > 0 && subtasks != null) {
@@ -80,7 +81,7 @@ public class Epic extends Task {
      * @param subtaskId идентификатор подзадачи
      * @param subtasks общее хранилище подзадач
      */
-    public void removeSubtask(Integer subtaskId, HashMap<Integer, Subtask> subtasks) {
+    public void removeSubtask(Integer subtaskId, Map<Integer, Subtask> subtasks) {
         if (subtasks != null && subtaskList.contains(subtaskId)) {
             subtaskList.remove(subtaskId);
             refreshStatus(subtasks);
@@ -99,7 +100,7 @@ public class Epic extends Task {
      * @param subtask объект подзадачи
      * @param subtasks общее хранилище подзадач
      */
-    public void addSubtask(Subtask subtask, HashMap<Integer, Subtask> subtasks) {
+    public void addSubtask(Subtask subtask, Map<Integer, Subtask> subtasks) {
         if (subtask != null && subtasks != null) {
             if (!subtaskList.contains(subtask.getId())) {
                 subtaskList.add(subtask.getId());
