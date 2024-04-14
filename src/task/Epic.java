@@ -2,6 +2,7 @@ package task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -11,7 +12,7 @@ import java.util.Map;
  */
 public class Epic extends Task {
     /** Поле список id подзадач эпика */
-    private ArrayList<Integer> subtaskList;
+    private List<Integer> subtaskList;
 
     /** Конструктор эпика с параметрами.
      * @param name название

@@ -64,11 +64,7 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public List<Task> getAllTasks() {
-        List<Task> result = new ArrayList<>();
-        for (Task task : tasks.values()) {
-            result.add(task);
-        }
-        return result;
+        return new ArrayList<>(tasks.values());
     }
 
     /**
@@ -78,11 +74,7 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public List<Subtask> getAllSubtasks() {
-        List<Subtask> result = new ArrayList<>();
-        for (Subtask subtask : subtasks.values()) {
-            result.add(subtask);
-        }
-        return result;
+        return new ArrayList<>(subtasks.values());
     }
 
     /**
@@ -92,11 +84,8 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public List<Epic> getAllEpics() {
-        List<Epic> result = new ArrayList<>();
-        for (Epic epic : epics.values()) {
-            result.add(epic);
-        }
-        return result;
+        return new ArrayList<>(epics.values());
+
     }
 
     /**
