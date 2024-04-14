@@ -13,7 +13,7 @@ import java.util.Map;
  * Менеджер задач - реализация интерфейса {@link TaskManager}
  *
  * @author Николаев Д.В.
- * @version 1.1
+ * @version 3.2
  */
 public class InMemoryTaskManager implements TaskManager {
     /**
@@ -266,6 +266,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void removeTask(int taskId) {
         tasks.remove(taskId);
+        historyManager.remove(taskId);
     }
 
     /**
@@ -281,6 +282,7 @@ public class InMemoryTaskManager implements TaskManager {
             if (epic != null) {
                 subtasks.remove(subtaskId);
                 epic.removeSubtask(subtaskId, subtasks);
+                historyManager.remove(subtaskId);
             }
         }
     }
@@ -296,8 +298,10 @@ public class InMemoryTaskManager implements TaskManager {
         if (epic != null) {
             for (Integer subtaskId : epic.getSubtaskList()) {
                 subtasks.remove(subtaskId);
+                historyManager.remove(subtaskId);
             }
             epics.remove(epicId);
+            historyManager.remove(epicId);
         }
     }
 
@@ -340,7 +344,7 @@ public class InMemoryTaskManager implements TaskManager {
     /**
      * Метод получения истории просмотра задач (подзадач, эпиков) через назначенный {@link InMemoryTaskManager#historyManager}
      *
-     * @return ArrayList<Task> список задач (подзадач, эпиков) в истории
+     * @return List<Task> список задач (подзадач, эпиков) в истории
      */
     @Override
     public List<Task> getHistory() {

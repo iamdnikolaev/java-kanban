@@ -61,6 +61,74 @@ public class Main {
 
         System.out.println("\n==== Состояние объектов после просмотра еще 11 раз ====");
         printAllTasks(taskManager);
+
+        System.out.println("\n\n==== Дополнительное задание ====");
+        taskManager = Managers.getDefault();
+
+        Task task3 = new Task("Задача 3", "Описание задачи 3");
+        task3 = taskManager.createTask(task3);
+        Task task4 = new Task("Задача 4", "Описание задачи 4");
+        task4 = taskManager.createTask(task4);
+
+        Epic epic3 = new Epic("Эпик 3", "Описание эпика 3");
+        epic3 = taskManager.createEpic(epic3);
+        Subtask subtask31 = new Subtask("Подзадача 3_1", "Описание подзадачи 3_1", epic3.getId());
+        subtask31 = taskManager.createSubtask(subtask31);
+        Subtask subtask32 = new Subtask("Подзадача 3_2", "Описание подзадачи 3_2", epic3.getId());
+        subtask32 = taskManager.createSubtask(subtask32);
+        Subtask subtask33 = new Subtask("Подзадача 3_3", "Описание подзадачи 3_3", epic3.getId());
+        subtask33 = taskManager.createSubtask(subtask33);
+
+        Epic epic4 = new Epic("Эпик 4 без подзадач", "Описание эпика 4 без подзадач");
+        epic4 = taskManager.createEpic(epic4);
+
+        System.out.println("Запрос task3");
+        taskManager.getTask(task3.getId());
+        System.out.println("История: " + taskManager.getHistory());
+
+        System.out.println("\nЗапрос task4");
+        taskManager.getTask(task4.getId());
+        System.out.println("История: " + taskManager.getHistory());
+
+        System.out.println("\nЗапрос task3 снова");
+        taskManager.getTask(task3.getId());
+        System.out.println("История: " + taskManager.getHistory());
+
+        System.out.println("\nЗапрос task4 снова");
+        taskManager.getTask(task4.getId());
+        System.out.println("История: " + taskManager.getHistory());
+
+        System.out.println("\nЗапрос epic3");
+        taskManager.getEpic(epic3.getId());
+        System.out.println("История: " + taskManager.getHistory());
+
+        System.out.println("\nЗапрос epic4");
+        taskManager.getEpic(epic4.getId());
+        System.out.println("История: " + taskManager.getHistory());
+
+        System.out.println("\nЗапрос epic3 снова");
+        taskManager.getEpic(epic3.getId());
+        System.out.println("История: " + taskManager.getHistory());
+
+        System.out.println("\nЗапрос subtask31");
+        taskManager.getSubtask(subtask31.getId());
+        System.out.println("История: " + taskManager.getHistory());
+
+        System.out.println("\nЗапрос subtask32");
+        taskManager.getSubtask(subtask32.getId());
+        System.out.println("История: " + taskManager.getHistory());
+
+        System.out.println("\nЗапрос subtask33");
+        taskManager.getSubtask(subtask33.getId());
+        System.out.println("История: " + taskManager.getHistory());
+
+        System.out.println("\nУдалили задачу 3");
+        taskManager.removeTask(task3.getId());
+        System.out.println("История: " + taskManager.getHistory());
+
+        System.out.println("\nУдалили эпик 3");
+        taskManager.removeEpic(epic3.getId());
+        System.out.println("История: " + taskManager.getHistory());
     }
 
     private static void printAllTasks(TaskManager manager) {
