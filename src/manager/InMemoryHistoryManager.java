@@ -127,7 +127,7 @@ public class InMemoryHistoryManager implements HistoryManager {
      *
      * @param task задача для добавления
      */
-    public void linkLast (Task task) {
+    private void linkLast (Task task) {
         if (task != null) {
             Node newNode = new Node(task);
             if (last != null) {
