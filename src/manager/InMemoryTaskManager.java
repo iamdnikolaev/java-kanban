@@ -13,7 +13,7 @@ import java.util.Map;
  * Менеджер задач - реализация интерфейса {@link TaskManager}
  *
  * @author Николаев Д.В.
- * @version 1.1
+ * @version 3.2
  */
 public class InMemoryTaskManager implements TaskManager {
     /**
@@ -64,11 +64,7 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public List<Task> getAllTasks() {
-        List<Task> result = new ArrayList<>();
-        for (Task task : tasks.values()) {
-            result.add(task);
-        }
-        return result;
+        return new ArrayList<>(tasks.values());
     }
 
     /**
@@ -78,11 +74,7 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public List<Subtask> getAllSubtasks() {
-        List<Subtask> result = new ArrayList<>();
-        for (Subtask subtask : subtasks.values()) {
-            result.add(subtask);
-        }
-        return result;
+        return new ArrayList<>(subtasks.values());
     }
 
     /**
@@ -92,11 +84,8 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public List<Epic> getAllEpics() {
-        List<Epic> result = new ArrayList<>();
-        for (Epic epic : epics.values()) {
-            result.add(epic);
-        }
-        return result;
+        return new ArrayList<>(epics.values());
+
     }
 
     /**
@@ -104,6 +93,9 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public void clearAllTasks() {
+        for (Integer taskId : tasks.keySet()) {
+            historyManager.remove(taskId);
+        }
         tasks.clear();
     }
 
@@ -116,6 +108,9 @@ public class InMemoryTaskManager implements TaskManager {
             for (Epic epic : epics.values()) {
                 epic.clearSubtasks();
             }
+            for (Integer subTaskId : subtasks.keySet()) {
+                historyManager.remove(subTaskId);
+            }
             subtasks.clear();
         }
     }
@@ -125,7 +120,14 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public void clearAllEpics() {
+        for (Integer epicId : epics.keySet()) {
+            historyManager.remove(epicId);
+        }
         epics.clear();
+
+        for (Integer subTaskId : subtasks.keySet()) {
+            historyManager.remove(subTaskId);
+        }
         subtasks.clear();
     }
 
@@ -266,6 +268,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void removeTask(int taskId) {
         tasks.remove(taskId);
+        historyManager.remove(taskId);
     }
 
     /**
@@ -281,6 +284,7 @@ public class InMemoryTaskManager implements TaskManager {
             if (epic != null) {
                 subtasks.remove(subtaskId);
                 epic.removeSubtask(subtaskId, subtasks);
+                historyManager.remove(subtaskId);
             }
         }
     }
@@ -296,8 +300,10 @@ public class InMemoryTaskManager implements TaskManager {
         if (epic != null) {
             for (Integer subtaskId : epic.getSubtaskList()) {
                 subtasks.remove(subtaskId);
+                historyManager.remove(subtaskId);
             }
             epics.remove(epicId);
+            historyManager.remove(epicId);
         }
     }
 
@@ -340,7 +346,7 @@ public class InMemoryTaskManager implements TaskManager {
     /**
      * Метод получения истории просмотра задач (подзадач, эпиков) через назначенный {@link InMemoryTaskManager#historyManager}
      *
-     * @return ArrayList<Task> список задач (подзадач, эпиков) в истории
+     * @return List<Task> список задач (подзадач, эпиков) в истории
      */
     @Override
     public List<Task> getHistory() {

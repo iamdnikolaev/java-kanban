@@ -82,6 +82,28 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    void addTwoSubtasksAndDeleteOne() {
+        assertNotNull(savedSubtask, "Подзадача 1_1 не создана.");
+        savedSubtask = taskManager.getSubtask(subtask.getId());
+        assertNotNull(savedSubtask, "Подзадача 1_1 не найдена.");
+        assertEquals(subtask, savedSubtask, "Подзадачи созданная и добавленная не совпадают.");
+
+        Subtask subtask2 = new Subtask("Подзадача 1_2", "Описание подзадачи 1_2", savedEpic.getId());
+        subtask2 = taskManager.createSubtask(subtask2);
+
+        List<Subtask> subtasks = taskManager.getAllSubtasks();
+        assertNotNull(subtasks, "Подзадачи не возвращаются.");
+        assertEquals(2, subtasks.size(), "Неверное количество подзадач.");
+        List<Integer> subtasksListId = savedEpic.getSubtaskList();
+        assertEquals(2, subtasksListId.size(), "Неверное количество подзадач в поле эпика.");
+
+        taskManager.removeSubtask(savedSubtask.getId());
+        subtasksListId = savedEpic.getSubtaskList();
+        assertEquals(1, subtasksListId.size(), "Неверное количество подзадач в поле эпика после удаления подзадачи 1_1.");
+        assertEquals(subtask2.getId(), subtasksListId.getFirst(), "Неверный id оставшейся подзадачи 1_2 в поле эпика после удаления подзадачи 1_1.");
+    }
+
+    @Test
     void addNewTaskSameId() {
         Task task = new Task("Тестовая задача 2", "Описание тестовой задачи 2", savedTask.getId());
         taskManager.createTask(task);
@@ -104,6 +126,9 @@ class InMemoryTaskManagerTest {
         history = taskManager.getHistory();
         assertNotNull(history, "После просмотра задачи история не пустая.");
         assertEquals(3, history.size(), "После просмотра эпика, подзадачи, задачи в истории 3 записи.");
+
+        assertEquals(savedEpic.getId(), history.get(0).getId(), "В истории первой идет запись об эпике.");
+        assertEquals(savedTask.getId(), history.get(2).getId(), "В истории последней идет запись о задаче.");
     }
 
     @Test
@@ -124,5 +149,59 @@ class InMemoryTaskManagerTest {
 
         Subtask subtaskAfterUpd = taskManager.getSubtask(subtask.getId());
         assertNotEquals(subtaskAfterUpd.getId(), subtaskAfterUpd.getEpicId(), "Подзадача стала своим эпиком.");
+    }
+
+    @Test
+    void addGetAndClear() {
+        Subtask subtask12 = new Subtask("Подзадача 1_2", "Описание подзадачи 1_2", savedEpic.getId());
+        subtask12 = taskManager.createSubtask(subtask12);
+
+        Epic epic2 = new Epic("Эпик 2", "Описание эпика 2");
+        epic2 = taskManager.createEpic(epic2);
+
+        Subtask subtask21 = new Subtask("Подзадача 2_1", "Описание подзадачи 2_1", epic2.getId());
+        subtask21 = taskManager.createSubtask(subtask21);
+        Subtask subtask22 = new Subtask("Подзадача 2_2", "Описание подзадачи 2_2", epic2.getId());
+        subtask22 = taskManager.createSubtask(subtask22);
+
+        Task task2 = new Task("Тестовая задача 2", "Описание тестовой задачи 2");
+        task2 = taskManager.createTask(task2);
+
+        taskManager.getEpic(savedEpic.getId());
+        taskManager.getEpic(epic2.getId());
+        List<Task> history = taskManager.getHistory();
+        assertNotNull(history, "После просмотра эпиков история не пустая.");
+        assertEquals(2, history.size(), "После просмотра эпиков в истории 2 записи.");
+
+        taskManager.getSubtask(savedSubtask.getId());
+        taskManager.getSubtask(subtask12.getId());
+        taskManager.getSubtask(subtask21.getId());
+        taskManager.getSubtask(subtask22.getId());
+        history = taskManager.getHistory();
+        assertEquals(6, history.size(), "После просмотра эпиков и подзадач в истории 6 записей.");
+
+        taskManager.getTask(savedTask.getId());
+        taskManager.getTask(task2.getId());
+        history = taskManager.getHistory();
+        assertEquals(8, history.size(), "После просмотра эпиков, подзадач, задач в истории 8 записи.");
+
+        assertEquals(savedEpic.getId(), history.get(0).getId(), "В истории первой идет запись об эпике 1.");
+        assertEquals(task2.getId(), history.get(7).getId(), "В истории последней идет запись о задаче 2.");
+
+        taskManager.clearAllTasks();
+        history = taskManager.getHistory();
+        assertEquals(6, history.size(), "После удаления задач в истории 6 записей.");
+        assertEquals(savedEpic.getId(), history.get(0).getId(), "В истории первой идет запись об эпике 1.");
+        assertEquals(subtask22.getId(), history.get(5).getId(), "В истории последней идет запись о подзадаче 2_2.");
+
+        taskManager.clearAllSubtasks();
+        history = taskManager.getHistory();
+        assertEquals(2, history.size(), "После удаления подзадач в истории 2 записи.");
+        assertEquals(savedEpic.getId(), history.get(0).getId(), "В истории первой идет запись об эпике 1.");
+        assertEquals(epic2.getId(), history.get(1).getId(), "В истории последней идет запись об эпике 2.");
+
+        taskManager.clearAllEpics();
+        history = taskManager.getHistory();
+        assertEquals(0, history.size(), "После удаления эпиков в истории 0 записей.");
     }
 }
