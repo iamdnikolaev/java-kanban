@@ -19,7 +19,7 @@ public class InMemoryTaskManager implements TaskManager {
     /**
      * Поле счетчика для генерации идентификаторов методом {@link InMemoryTaskManager#getNextId()}
      */
-    private int idCounter;
+    protected int idCounter;
     /**
      * Поле хранилище задач
      */
@@ -176,7 +176,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task createTask(Task task) {
         if (task != null) {
-            task.setId(getNextId());
+            if (task.getId() == 0) {
+                task.setId(getNextId());
+            }
             tasks.put(task.getId(), task);
         }
         return task;
@@ -193,7 +195,9 @@ public class InMemoryTaskManager implements TaskManager {
         if (subtask != null) {
             Epic epic = epics.get(subtask.getEpicId());
             if (epic != null) {
-                subtask.setId(getNextId());
+                if (subtask.getId() == 0) {
+                    subtask.setId(getNextId());
+                }
                 subtasks.put(subtask.getId(), subtask);
                 epic.addSubtask(subtask, subtasks);
             }
@@ -210,7 +214,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Epic createEpic(Epic epic) {
         if (epic != null) {
-            epic.setId(getNextId());
+            if (epic.getId() == 0) {
+                epic.setId(getNextId());
+            }
             epics.put(epic.getId(), epic);
         }
         return epic;
