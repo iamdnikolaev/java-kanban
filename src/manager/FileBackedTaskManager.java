@@ -95,19 +95,19 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         String[] attrFromString = value.split(",");
         TaskStatus status = TaskStatus.valueOf(attrFromString[3]);
         TaskType type = TaskType.valueOf(attrFromString[1]);
+        int id = Integer.parseInt(attrFromString[0]);
 
         Task result;
         switch (type) {
             case TaskType.TASK:
-                result = createTask(new Task(attrFromString[2], attrFromString[4], Integer.parseInt(attrFromString[0]),
-                        status));
+                result = super.createTask(new Task(attrFromString[2], attrFromString[4], id, status), true);
                 break;
             case TaskType.SUBTASK:
-                result = createSubtask(new Subtask(attrFromString[2], attrFromString[4],
-                        Integer.parseInt(attrFromString[0]), status, Integer.parseInt(attrFromString[5])));
+                result = super.createSubtask(new Subtask(attrFromString[2], attrFromString[4], id, status,
+                        Integer.parseInt(attrFromString[5])), true);
                 break;
             case TaskType.EPIC:
-                result = createEpic(new Epic(attrFromString[2], attrFromString[4], Integer.parseInt(attrFromString[0])));
+                result = super.createEpic(new Epic(attrFromString[2], attrFromString[4], id), true);
                 break;
             default:
                 result = null;
@@ -245,6 +245,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             epic2 = managerBacked.createEpic(epic2);
             Subtask subtask21 = new Subtask("Подзадача 2_1", "Описание подзадачи 2_1", epic2.getId());
             subtask21 = managerBacked.createSubtask(subtask21);
+
+            managerBacked.updateTask(new Task(task1.getName(), task1.getDescription(), task1.getId(), TaskStatus.IN_PROGRESS));
+            managerBacked.updateTask(new Task(task2.getName(), task2.getDescription(), task2.getId(), TaskStatus.DONE));
+            managerBacked.updateSubtask(new Subtask(subtask12.getName(), subtask12.getDescription(), subtask12.getId(), TaskStatus.IN_PROGRESS, subtask12.getEpicId()));
+            managerBacked.updateSubtask(new Subtask(subtask21.getName(), subtask21.getDescription(), subtask21.getId(), TaskStatus.DONE, subtask21.getEpicId()));
 
             managerBacked2 = FileBackedTaskManager.loadFromFile(testFileTasks);
             List<Epic> managerBackedEpics = managerBacked.getAllEpics();
