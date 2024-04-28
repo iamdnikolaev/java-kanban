@@ -121,7 +121,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
      * @param file CSV-файл со значениями полей объектов менеджера
      * @return {@link FileBackedTaskManager} созданный менеджер
      */
-    static FileBackedTaskManager loadFromFile(File file) {
+    public static FileBackedTaskManager loadFromFile(File file) {
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(file);
 
         try (BufferedReader fileReader = new BufferedReader(new FileReader(file, StandardCharsets.UTF_8))) {
