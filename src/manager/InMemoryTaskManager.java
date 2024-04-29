@@ -13,13 +13,13 @@ import java.util.Map;
  * Менеджер задач - реализация интерфейса {@link TaskManager}
  *
  * @author Николаев Д.В.
- * @version 3.2
+ * @version 3.3
  */
 public class InMemoryTaskManager implements TaskManager {
     /**
      * Поле счетчика для генерации идентификаторов методом {@link InMemoryTaskManager#getNextId()}
      */
-    private int idCounter;
+    protected int idCounter;
     /**
      * Поле хранилище задач
      */
@@ -175,8 +175,26 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public Task createTask(Task task) {
+        return createTask(task, false);
+    }
+
+    /**
+     * Метод добавления задачи в хранилище {@link InMemoryTaskManager#tasks} с возможностью форсированного выставления
+     * заданного id.
+     *
+     * @param task задача с атрибутми для добавления
+     * @param forceId флаг (true) использования заданного id задачи, если он > 0, иначе (false) - генерация нового id
+     * @return созданная задача - объект {@link Task}
+     */
+    protected Task createTask(Task task, Boolean forceId) {
         if (task != null) {
-            task.setId(getNextId());
+            if (forceId) {
+                if (task.getId() == 0) {
+                    task.setId(getNextId());
+                }
+            } else {
+                task.setId(getNextId());
+            }
             tasks.put(task.getId(), task);
         }
         return task;
@@ -190,10 +208,28 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public Subtask createSubtask(Subtask subtask) {
+        return createSubtask(subtask, false);
+    }
+
+    /**
+     * Метод добавления подзадачи в хранилище {@link InMemoryTaskManager#subtasks} с занесением в список у назначеннго
+     * эпика и с возможностью форсированного выставления заданного id.
+     *
+     * @param subtask подзадача с атрибутами для добавления
+     * @param forceId флаг (true) использования заданного id подзадачи, если он > 0, иначе (false) - генерация нового id
+     * @return созданная подзадача - объект {@link Subtask}
+     */
+    protected Subtask createSubtask(Subtask subtask, Boolean forceId) {
         if (subtask != null) {
             Epic epic = epics.get(subtask.getEpicId());
             if (epic != null) {
-                subtask.setId(getNextId());
+                if (forceId) {
+                    if (subtask.getId() == 0) {
+                        subtask.setId(getNextId());
+                    }
+                } else {
+                    subtask.setId(getNextId());
+                }
                 subtasks.put(subtask.getId(), subtask);
                 epic.addSubtask(subtask, subtasks);
             }
@@ -209,8 +245,26 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public Epic createEpic(Epic epic) {
+        return createEpic(epic, false);
+    }
+
+    /**
+     * Метод добавления эпика в хранилище {@link InMemoryTaskManager#epics} с возможностью форсированного выставления
+     * заданного id.
+     *
+     * @param epic эпик с атрибутми для добавления
+     * @param forceId флаг (true) использования заданного id эпика, если он > 0, иначе (false) - генерация нового id
+     * @return созданный эпик - объект {@link Epic}
+     */
+    protected Epic createEpic(Epic epic, Boolean forceId) {
         if (epic != null) {
-            epic.setId(getNextId());
+            if (forceId) {
+                if (epic.getId() == 0) {
+                    epic.setId(getNextId());
+                }
+            } else {
+                epic.setId(getNextId());
+            }
             epics.put(epic.getId(), epic);
         }
         return epic;
