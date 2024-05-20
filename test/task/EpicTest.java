@@ -35,8 +35,9 @@ class EpicTest {
 
     @Test
     void addSubtask() {
-        Subtask subtask = new Subtask("Подзадача 1", "Описание подзадачи 1", 1, epic.getId());
+        Subtask subtask = new Subtask("Подзадача 1", "Описание подзадачи 1", 3, epic.getId());
         HashMap<Integer, Subtask> subtasks = new HashMap<>();
+        subtasks.put(subtask.getId(), subtask);
         epic.addSubtask(subtask, subtasks);
         ArrayList<Integer> subtaskList = epic.getSubtaskList();
         assertNotNull(subtaskList, "Создан список подзадач.");
@@ -45,8 +46,9 @@ class EpicTest {
 
     @Test
     void getSubtaskList() {
-        Subtask subtask = new Subtask("Подзадача 1", "Описание подзадачи 1", 1, epic.getId());
+        Subtask subtask = new Subtask("Подзадача 1", "Описание подзадачи 1", 4, epic.getId());
         HashMap<Integer, Subtask> subtasks = new HashMap<>();
+        subtasks.put(subtask.getId(), subtask);
         epic.addSubtask(subtask, subtasks);
         ArrayList<Integer> subtaskList = epic.getSubtaskList();
         assertNotNull(subtaskList, "Создан список подзадач.");
@@ -54,8 +56,9 @@ class EpicTest {
 
     @Test
     void removeSubtask() {
-        Subtask subtask = new Subtask("Подзадача 1", "Описание подзадачи 1", 1, epic.getId());
+        Subtask subtask = new Subtask("Подзадача 1", "Описание подзадачи 1", 5, epic.getId());
         HashMap<Integer, Subtask> subtasks = new HashMap<>();
+        subtasks.put(subtask.getId(), subtask);
         epic.addSubtask(subtask, subtasks);
         ArrayList<Integer> subtaskList = epic.getSubtaskList();
         assertNotNull(subtaskList, "Создан список подзадач.");
@@ -67,8 +70,9 @@ class EpicTest {
 
     @Test
     void clearSubtasks() {
-        Subtask subtask = new Subtask("Подзадача 1", "Описание подзадачи 1", 1, epic.getId());
+        Subtask subtask = new Subtask("Подзадача 1", "Описание подзадачи 1", 6, epic.getId());
         HashMap<Integer, Subtask> subtasks = new HashMap<>();
+        subtasks.put(subtask.getId(), subtask);
         epic.addSubtask(subtask, subtasks);
         ArrayList<Integer> subtaskList = epic.getSubtaskList();
         assertNotNull(subtaskList, "Создан список подзадач.");
