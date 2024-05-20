@@ -1,10 +1,12 @@
 package task;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
  * Класс задач
- * @version 2.0
+ * @version 2.1
  * @author Николаев Д.В.
  */
 public class Task {
@@ -16,6 +18,12 @@ public class Task {
     protected int id;
     /** Поле статуса перечисляемого типа {@link TaskStatus} */
     protected TaskStatus status;
+
+    /** Поле продолжительности задания, в минутах */
+    protected Duration duration;
+
+    /** Поле даты и времени начала выполнения */
+    protected LocalDateTime startTime;
 
     /** Конструктор задачи с параметрами без указания статуса. Создается как NEW.
      * @param name название
@@ -53,16 +61,90 @@ public class Task {
         this.status = TaskStatus.NEW;
     }
 
-    /** Конструктор задачи с указанием текущего статуса, но без id для прикладных целей
-     * @param name название
+    /**
+     * Конструктор задачи с указанием текущего статуса, но без id для прикладных целей
+     *
+     * @param name        название
      * @param description описание
-     * @param status текущий статус
+     * @param status      текущий статус
      */
     public Task(String name, String description, TaskStatus status) {
         this.name = name;
         this.description = description;
         this.id = 0;
         this.status = status;
+    }
+
+    /**
+     * Конструктор задачи с параметрами без указания статуса, с атрибутами времени. Создается как NEW.
+     *
+     * @param name        название
+     * @param description описание
+     * @param id          идентификатор
+     * @param duration    продолжительность задачи, мин. - целое число
+     * @param startTime   дата и время начала выполнения
+     */
+    public Task(String name, String description, int id, Long duration, LocalDateTime startTime) {
+        this.name = name;
+        this.description = description;
+        this.id = id;
+        this.status = TaskStatus.NEW;
+        this.duration = (duration != null) ? Duration.ofMinutes(duration) : null;
+        this.startTime = startTime;
+    }
+
+    /**
+     * Конструктор задачи с параметрами, с указанием текущего статуса и атрибутов времени.
+     *
+     * @param name        название
+     * @param description описание
+     * @param id          идентификатор
+     * @param status      текущий статус
+     * @param duration    продолжительность задачи, мин. - целое число
+     * @param startTime   дата и время начала выполнения
+     */
+    public Task(String name, String description, int id, TaskStatus status, Long duration, LocalDateTime startTime) {
+        this.name = name;
+        this.description = description;
+        this.id = id;
+        this.status = status;
+        this.duration = (duration != null) ? Duration.ofMinutes(duration) : null;
+        this.startTime = startTime;
+    }
+
+    /**
+     * Конструктор задачи со статусом NEW и атрибутами времени, без id для прикладных целей
+     *
+     * @param name        название
+     * @param description описание
+     * @param duration    продолжительность задачи, мин. - целое число
+     * @param startTime   дата и время начала выполнения
+     */
+    public Task(String name, String description, Long duration, LocalDateTime startTime) {
+        this.name = name;
+        this.description = description;
+        this.id = 0;
+        this.status = TaskStatus.NEW;
+        this.duration = (duration != null) ? Duration.ofMinutes(duration) : null;
+        this.startTime = startTime;
+    }
+
+    /**
+     * Конструктор задачи с указанием текущего статуса и атрибутов времени, но без id для прикладных целей
+     *
+     * @param name        название
+     * @param description описание
+     * @param status      текущий статус
+     * @param duration    продолжительность задачи, мин. - целое число
+     * @param startTime   дата и время начала выполнения
+     */
+    public Task(String name, String description, TaskStatus status, Long duration, LocalDateTime startTime) {
+        this.name = name;
+        this.description = description;
+        this.id = 0;
+        this.status = status;
+        this.duration = (duration != null) ? Duration.ofMinutes(duration) : null;
+        this.startTime = startTime;
     }
 
     public String getName() {
@@ -93,6 +175,26 @@ public class Task {
         return status;
     }
 
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    /**
+     * Метод получения расчетной даты и времени окончания выполнения задачи
+     * @return startTime + duration
+     */
+    public LocalDateTime getEndTime() {
+       LocalDateTime result = null;
+        if (startTime != null && duration != null) {
+            result = startTime.plus(duration);
+        }
+        return result;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
@@ -113,6 +215,8 @@ public class Task {
                 ", description='" + description + '\'' +
                 ", id=" + id +
                 ", status=" + status +
+                ", duration=" + (duration != null ? duration.toMinutes() : null) +
+                ", startTime=" + startTime +
                 '}';
     }
 }
