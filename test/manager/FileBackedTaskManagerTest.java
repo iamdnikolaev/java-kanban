@@ -197,7 +197,7 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
             assertEquals(13, counter, "В файле неверное количество заполненных строк.");
             assertEquals(LocalDateTime.of(2024, 5, 20, 21, 0), epic1.getStartTime(), "Неверное значение расчетной даты начала выполнения эпика 1.");
             assertEquals(LocalDateTime.of(2024, 5, 20, 22, 0), epic1.getEndTime(), "Неверное значение расчетной даты окончания выполнения эпика 1.");
-            assertEquals(60, epic1.getDuration().toMinutes(), "Неверное значение расчетной продолжительности выполнения эпика 1.");
+            assertEquals(45, epic1.getDuration().toMinutes(), "Неверное значение расчетной продолжительности выполнения эпика 1.");
         } catch (FileNotFoundException e) {
             System.out.println("Файл не найден.");
             e.printStackTrace();

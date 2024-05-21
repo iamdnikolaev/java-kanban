@@ -37,19 +37,9 @@ public class InMemoryTaskManager implements TaskManager {
     private HistoryManager historyManager = Managers.getDefaultHistory();
 
     /**
-     * Поле компаратор для упорядочивания задач по дате/времени начала выполнения
-     */
-    Comparator<Task> compareByStartTime = new Comparator<Task>() {
-        @Override
-        public int compare(Task t1, Task t2) {
-            return t1.getStartTime().compareTo(t2.getStartTime());
-        }
-    };
-
-    /**
      * Поле множества задач и подзадач, упорядоченных по приоритету даты/времени начала выполнения
      */
-    private Set<Task> tasksByStartTime = new TreeSet<>(compareByStartTime);
+    private Set<Task> tasksByStartTime = new TreeSet<>(Comparator.comparing(Task::getStartTime));
 
     @Override
     public String toString() {
@@ -204,12 +194,12 @@ public class InMemoryTaskManager implements TaskManager {
      * Метод добавления задачи в хранилище {@link InMemoryTaskManager#tasks} с возможностью форсированного выставления
      * заданного id.
      *
-     * @param task задача с атрибутми для добавления
+     * @param task    задача с атрибутми для добавления
      * @param forceId флаг (true) использования заданного id задачи, если он > 0, иначе (false) - генерация нового id
      * @return созданная задача - объект {@link Task}
      */
     protected Task createTask(Task task, Boolean forceId) {
-        if (task != null) {
+        if (task != null && isValid(task)) {
             if (forceId) {
                 if (task.getId() == 0) {
                     task.setId(getNextId());
@@ -217,11 +207,9 @@ public class InMemoryTaskManager implements TaskManager {
             } else {
                 task.setId(getNextId());
             }
-            if (isValid(task)) {
-                tasks.put(task.getId(), task);
-                if (task.getStartTime() != null) {
-                    tasksByStartTime.add(task);
-                }
+            tasks.put(task.getId(), task);
+            if (task.getStartTime() != null) {
+                tasksByStartTime.add(task);
             }
         }
         return task;
@@ -249,7 +237,7 @@ public class InMemoryTaskManager implements TaskManager {
     protected Subtask createSubtask(Subtask subtask, Boolean forceId) {
         if (subtask != null) {
             Epic epic = epics.get(subtask.getEpicId());
-            if (epic != null) {
+            if (epic != null && isValid(subtask)) {
                 if (forceId) {
                     if (subtask.getId() == 0) {
                         subtask.setId(getNextId());
@@ -257,12 +245,10 @@ public class InMemoryTaskManager implements TaskManager {
                 } else {
                     subtask.setId(getNextId());
                 }
-                if (isValid(subtask)) {
-                    subtasks.put(subtask.getId(), subtask);
-                    epic.addSubtask(subtask, subtasks);
-                    if (subtask.getStartTime() != null) {
-                        tasksByStartTime.add(subtask);
-                    }
+                subtasks.put(subtask.getId(), subtask);
+                epic.addSubtask(subtask, subtasks);
+                if (subtask.getStartTime() != null) {
+                    tasksByStartTime.add(subtask);
                 }
             }
         }
@@ -284,7 +270,7 @@ public class InMemoryTaskManager implements TaskManager {
      * Метод добавления эпика в хранилище {@link InMemoryTaskManager#epics} с возможностью форсированного выставления
      * заданного id.
      *
-     * @param epic эпик с атрибутми для добавления
+     * @param epic    эпик с атрибутми для добавления
      * @param forceId флаг (true) использования заданного id эпика, если он > 0, иначе (false) - генерация нового id
      * @return созданный эпик - объект {@link Epic}
      */
@@ -470,6 +456,7 @@ public class InMemoryTaskManager implements TaskManager {
     /**
      * Метод валидации задачи. Проверяет:
      * на пересечение по датам начала/окончания с другими задачами(подзадачами) согласно списку из {@link InMemoryTaskManager#tasksByStartTime}.
+     *
      * @param taskToCheck объект {@link Task} задачи (подзадачи) для проверки.
      * @return true - задача прошла проверки; иначе генерация исключения.
      */

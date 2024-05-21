@@ -2,10 +2,7 @@ package task;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Класс эпиков
@@ -109,15 +106,17 @@ public class Epic extends Task {
                 }
             }
             if (!subtaskSortedByTime.isEmpty()) {
-                subtaskSortedByTime.sort(Subtask::compareByTime);
+                subtaskSortedByTime.sort(Comparator.comparing(Subtask::getStartTime));
 
                 Subtask firstSubtask = subtaskSortedByTime.getFirst();
                 startTime = firstSubtask.getStartTime();
 
                 Subtask lastSubtask = subtaskSortedByTime.getLast();
-                endTime = lastSubtask.getStartTime().plus(lastSubtask.getDuration());
+                endTime = lastSubtask.getEndTime();
 
-                duration = Duration.between(startTime, endTime);
+                duration = firstSubtask.getDuration();
+                subtaskSortedByTime.removeFirst();
+                subtaskSortedByTime.forEach(subtask -> duration = duration.plus(subtask.getDuration()));
             }
         }
     }

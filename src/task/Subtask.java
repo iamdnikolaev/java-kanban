@@ -133,8 +133,4 @@ public class Subtask extends Task {
                 ", startTime=" + startTime +
                 '}';
     }
-
-    public static int compareByTime(Subtask subtask1, Subtask subtask2) {
-        return subtask1.startTime.compareTo(subtask2.startTime);
-    }
 }
