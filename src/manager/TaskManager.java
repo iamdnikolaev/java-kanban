@@ -9,7 +9,7 @@ import java.util.List;
  * Интерфейс менеджеров работы с объектами учета (задачами, подзадачами, эпиками)
  *
  * @author Николаев Д.В.
- * @version 1.1
+ * @version 1.2
  */
 public interface TaskManager {
     List<Task> getAllTasks();
@@ -53,4 +53,10 @@ public interface TaskManager {
     List<Subtask> getSubtasksByEpic(Epic epic);
 
     List<Task> getHistory();
+
+    List<Task> getPrioritizedTasks();
+
+    boolean isValid(Task task);
+
+    void clearHistory();
 }

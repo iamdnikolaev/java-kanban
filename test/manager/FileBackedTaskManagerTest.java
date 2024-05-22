@@ -9,18 +9,23 @@ import task.TaskStatus;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class FileBackedTaskManagerTest {
-    private TaskManager taskManager;
+public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
     private File testFileTasks;
     private Task task1;
     private Task task2;
+    private Task task3;
+    private Task task4;
 
     private Subtask subtask11;
     private Subtask subtask12;
+    private Subtask subtask13;
+    private Subtask subtask14;
+    private Subtask subtask15;
     private Subtask subtask21;
     private Epic epic1;
     private Epic epic2;
@@ -31,18 +36,33 @@ public class FileBackedTaskManagerTest {
             testFileTasks = File.createTempFile("testFileTasks", null);
             taskManager = new FileBackedTaskManager(testFileTasks);
 
-            epic1 = taskManager.createEpic(new Epic("Эпик 1", "Описание эпика 1"));
+            assertDoesNotThrow(() -> {epic1 = taskManager.createEpic(new Epic("Эпик 1", "Описание эпика 1"));},
+                    "Ошибки записи в файл не возникло");
             epic2 = taskManager.createEpic(new Epic("Эпик 2", "Описание эпика 2"));
             subtask11 = taskManager.createSubtask(new Subtask("Подзадача 1_1", "Описание подзадачи 1_1", epic1.getId()));
             subtask12 = taskManager.createSubtask(new Subtask("Подзадача 1_2", "Описание подзадачи 1_2", epic1.getId()));
+            subtask15 = taskManager.createSubtask(new Subtask("Подзадача 1_5", "Описание подзадачи 1_5", epic1.getId(),
+                    10L, LocalDateTime.of(2024, 5, 20, 21, 50)));
+            subtask14 = taskManager.createSubtask(new Subtask("Подзадача 1_4", "Описание подзадачи 1_4", epic1.getId(),
+                    20L, LocalDateTime.of(2024, 5, 20, 21, 15)));
+            subtask13 = taskManager.createSubtask(new Subtask("Подзадача 1_3", "Описание подзадачи 1_3", epic1.getId(),
+                    15L, LocalDateTime.of(2024, 5, 20, 21, 0)));
             subtask21 = taskManager.createSubtask(new Subtask("Подзадача 2_1", "Описание подзадачи 2_1", epic2.getId()));
+
             task1 = taskManager.createTask(new Task("Тестовая задача 1", "Описание тестовой задачи 1"));
             task2 = taskManager.createTask(new Task("Тестовая задача 2", "Описание тестовой задачи 2"));
+            task3 = taskManager.createTask(new Task("Тестовая задача 3", "Описание тестовой задачи 3", 5L,
+                    LocalDateTime.of(2024, 5, 20, 19, 0)));
+            task4 = taskManager.createTask(new Task("Тестовая задача 4", "Описание тестовой задачи 4", 44L,
+                    LocalDateTime.of(2024, 5, 20, 19, 5)));
 
             taskManager.updateTask(new Task(task1.getName(), task1.getDescription(), task1.getId(), TaskStatus.IN_PROGRESS));
             task1 = taskManager.getTask(task1.getId());
             taskManager.updateTask(new Task(task2.getName(), task2.getDescription(), task2.getId(), TaskStatus.DONE));
             task2 = taskManager.getTask(task2.getId());
+            taskManager.updateTask(new Task(task4.getName(), task4.getDescription(), task4.getId(), TaskStatus.DONE,
+                    task4.getDuration().toMinutes(), task4.getStartTime()));
+            task4 = taskManager.getTask(task4.getId());
             taskManager.updateSubtask(new Subtask(subtask12.getName(), subtask12.getDescription(), subtask12.getId(), TaskStatus.IN_PROGRESS, subtask12.getEpicId()));
             subtask12 = taskManager.getSubtask(subtask12.getId());
             taskManager.updateSubtask(new Subtask(subtask21.getName(), subtask21.getDescription(), subtask21.getId(), TaskStatus.DONE, subtask21.getEpicId()));
@@ -60,7 +80,7 @@ public class FileBackedTaskManagerTest {
             int counter = 0;
             if (fileReader.ready()) {
                 String line = fileReader.readLine();
-                assertEquals(line, "id,type,name,status,description,epic", "Неверный формат CSV в начале файла.");
+                assertEquals("id,type,name,status,description,epic,duration,startTime", line, "Неверный формат CSV в начале файла.");
                 counter++;
             }
             while (fileReader.ready()) {
@@ -103,6 +123,36 @@ public class FileBackedTaskManagerTest {
                         assertEquals(subtask12.getEpicId(), Integer.parseInt(attrFromString[5]), "Не верно сохранен id эпика у подзадачи 1_2.");
                         break;
                     case 6:
+                        assertEquals(subtask15.getId(), id, "Не верно сохранен id подзадачи 1_5.");
+                        assertEquals(TaskType.SUBTASK, type, "Не верно сохранен тип подзадачи 1_5.");
+                        assertEquals(subtask15.getName(), attrFromString[2], "Не верно сохранено наименование подзадачи 1_5.");
+                        assertEquals(subtask15.getStatus(), status, "Не верно сохранен статус подзадачи 1_5.");
+                        assertEquals(subtask15.getDescription(), attrFromString[4], "Не верно сохранено описание подзадачи 1_5.");
+                        assertEquals(subtask15.getEpicId(), Integer.parseInt(attrFromString[5]), "Не верно сохранен id эпика у подзадачи 1_5.");
+                        assertEquals(subtask15.getDuration().toMinutes(), Integer.parseInt(attrFromString[6]), "Не верно сохранена продолжительность у подзадачи 1_5.");
+                        assertEquals(subtask15.getStartTime(), LocalDateTime.parse(attrFromString[7]), "Не верно сохранены дата и время начала у подзадачи 1_5.");
+                        break;
+                    case 7:
+                        assertEquals(subtask14.getId(), id, "Не верно сохранен id подзадачи 1_4.");
+                        assertEquals(TaskType.SUBTASK, type, "Не верно сохранен тип подзадачи 1_4.");
+                        assertEquals(subtask14.getName(), attrFromString[2], "Не верно сохранено наименование подзадачи 1_4.");
+                        assertEquals(subtask14.getStatus(), status, "Не верно сохранен статус подзадачи 1_4.");
+                        assertEquals(subtask14.getDescription(), attrFromString[4], "Не верно сохранено описание подзадачи 1_4.");
+                        assertEquals(subtask14.getEpicId(), Integer.parseInt(attrFromString[5]), "Не верно сохранен id эпика у подзадачи 1_4.");
+                        assertEquals(subtask14.getDuration().toMinutes(), Integer.parseInt(attrFromString[6]), "Не верно сохранена продолжительность у подзадачи 1_4.");
+                        assertEquals(subtask14.getStartTime(), LocalDateTime.parse(attrFromString[7]), "Не верно сохранены дата и время начала у подзадачи 1_4.");
+                        break;
+                    case 8:
+                        assertEquals(subtask13.getId(), id, "Не верно сохранен id подзадачи 1_3.");
+                        assertEquals(TaskType.SUBTASK, type, "Не верно сохранен тип подзадачи 1_3.");
+                        assertEquals(subtask13.getName(), attrFromString[2], "Не верно сохранено наименование подзадачи 1_3.");
+                        assertEquals(subtask13.getStatus(), status, "Не верно сохранен статус подзадачи 1_3.");
+                        assertEquals(subtask13.getDescription(), attrFromString[4], "Не верно сохранено описание подзадачи 1_3.");
+                        assertEquals(subtask13.getEpicId(), Integer.parseInt(attrFromString[5]), "Не верно сохранен id эпика у подзадачи 1_3.");
+                        assertEquals(subtask13.getDuration().toMinutes(), Integer.parseInt(attrFromString[6]), "Не верно сохранена продолжительность у подзадачи 1_3.");
+                        assertEquals(subtask13.getStartTime(), LocalDateTime.parse(attrFromString[7]), "Не верно сохранены дата и время начала у подзадачи 1_3.");
+                        break;
+                    case 9:
                         assertEquals(subtask21.getId(), id, "Не верно сохранен id подзадачи 2_1.");
                         assertEquals(TaskType.SUBTASK, type, "Не верно сохранен тип подзадачи 2_1.");
                         assertEquals(subtask21.getName(), attrFromString[2], "Не верно сохранено наименование подзадачи 2_1.");
@@ -110,23 +160,44 @@ public class FileBackedTaskManagerTest {
                         assertEquals(subtask21.getDescription(), attrFromString[4], "Не верно сохранено описание подзадачи 2_1.");
                         assertEquals(subtask21.getEpicId(), Integer.parseInt(attrFromString[5]), "Не верно сохранен id эпика у подзадачи 2_1.");
                         break;
-                    case 7:
+                    case 10:
                         assertEquals(task1.getId(), id, "Не верно сохранен id задачи 1.");
                         assertEquals(TaskType.TASK, type, "Не верно сохранен тип задачи 1.");
                         assertEquals(task1.getName(), attrFromString[2], "Не верно сохранено наименование задачи 1.");
                         assertEquals(task1.getStatus(), status, "Не верно сохранен статус задачи 1.");
                         assertEquals(task1.getDescription(), attrFromString[4], "Не верно сохранено описание задачи 1.");
                         break;
-                    case 8:
+                    case 11:
                         assertEquals(task2.getId(), id, "Не верно сохранен id задачи 2.");
                         assertEquals(TaskType.TASK, type, "Не верно сохранен тип задачи 2.");
                         assertEquals(task2.getName(), attrFromString[2], "Не верно сохранено наименование задачи 2.");
                         assertEquals(task2.getStatus(), status, "Не верно сохранен статус задачи 2.");
                         assertEquals(task2.getDescription(), attrFromString[4], "Не верно сохранено описание задачи 2.");
                         break;
+                    case 12:
+                        assertEquals(task3.getId(), id, "Не верно сохранен id задачи 3.");
+                        assertEquals(TaskType.TASK, type, "Не верно сохранен тип задачи 3.");
+                        assertEquals(task3.getName(), attrFromString[2], "Не верно сохранено наименование задачи 3.");
+                        assertEquals(task3.getStatus(), status, "Не верно сохранен статус задачи 3.");
+                        assertEquals(task3.getDescription(), attrFromString[4], "Не верно сохранено описание задачи 3.");
+                        assertEquals(task3.getDuration().toMinutes(), Integer.parseInt(attrFromString[6]), "Не верно сохранена продолжительность у задачи 3.");
+                        assertEquals(task3.getStartTime(), LocalDateTime.parse(attrFromString[7]), "Не верно сохранены дата и время начала у задачи 3.");
+                        break;
+                    case 13:
+                        assertEquals(task4.getId(), id, "Не верно сохранен id задачи 4.");
+                        assertEquals(TaskType.TASK, type, "Не верно сохранен тип задачи 4.");
+                        assertEquals(task4.getName(), attrFromString[2], "Не верно сохранено наименование задачи 4.");
+                        assertEquals(task4.getStatus(), status, "Не верно сохранен статус задачи 4.");
+                        assertEquals(task4.getDescription(), attrFromString[4], "Не верно сохранено описание задачи 4.");
+                        assertEquals(task4.getDuration().toMinutes(), Integer.parseInt(attrFromString[6]), "Не верно сохранена продолжительность у задачи 4.");
+                        assertEquals(task4.getStartTime(), LocalDateTime.parse(attrFromString[7]), "Не верно сохранены дата и время начала у задачи 4.");
+                        break;
                 }
             }
-            assertEquals(8, counter, "В файле неверное количество заполненных строк.");
+            assertEquals(13, counter, "В файле неверное количество заполненных строк.");
+            assertEquals(LocalDateTime.of(2024, 5, 20, 21, 0), epic1.getStartTime(), "Неверное значение расчетной даты начала выполнения эпика 1.");
+            assertEquals(LocalDateTime.of(2024, 5, 20, 22, 0), epic1.getEndTime(), "Неверное значение расчетной даты окончания выполнения эпика 1.");
+            assertEquals(45, epic1.getDuration().toMinutes(), "Неверное значение расчетной продолжительности выполнения эпика 1.");
         } catch (FileNotFoundException e) {
             System.out.println("Файл не найден.");
             e.printStackTrace();
@@ -180,6 +251,27 @@ public class FileBackedTaskManagerTest {
         assertEquals(subtask12.getDescription(), subtask12test.getDescription(), "Не верно загружено описание подзадачи 1_2.");
         assertEquals(subtask12.getEpicId(), subtask12test.getEpicId(), "Не верно загружен id эпика подзадачи 1_2.");
 
+        Subtask subtask13test = managerBacked2.getSubtask(subtask13.getId());
+        assertEquals(subtask13.getId(), subtask13test.getId(), "Не верно загружен id подзадачи 1_3.");
+        assertEquals(subtask13.getName(), subtask13test.getName(), "Не верно загружено наименование подзадачи 1_3.");
+        assertEquals(subtask13.getStatus(), subtask13test.getStatus(), "Не верно загружен статус подзадачи 1_3.");
+        assertEquals(subtask13.getDescription(), subtask13test.getDescription(), "Не верно загружено описание подзадачи 1_3.");
+        assertEquals(subtask13.getEpicId(), subtask13test.getEpicId(), "Не верно загружен id эпика подзадачи 1_3.");
+
+        Subtask subtask14test = managerBacked2.getSubtask(subtask14.getId());
+        assertEquals(subtask14.getId(), subtask14test.getId(), "Не верно загружен id подзадачи 1_4.");
+        assertEquals(subtask14.getName(), subtask14test.getName(), "Не верно загружено наименование подзадачи 1_4.");
+        assertEquals(subtask14.getStatus(), subtask14test.getStatus(), "Не верно загружен статус подзадачи 1_4.");
+        assertEquals(subtask14.getDescription(), subtask14test.getDescription(), "Не верно загружено описание подзадачи 1_4.");
+        assertEquals(subtask14.getEpicId(), subtask14test.getEpicId(), "Не верно загружен id эпика подзадачи 1_4.");
+
+        Subtask subtask15test = managerBacked2.getSubtask(subtask15.getId());
+        assertEquals(subtask15.getId(), subtask15test.getId(), "Не верно загружен id подзадачи 1_5.");
+        assertEquals(subtask15.getName(), subtask15test.getName(), "Не верно загружено наименование подзадачи 1_5.");
+        assertEquals(subtask15.getStatus(), subtask15test.getStatus(), "Не верно загружен статус подзадачи 1_5.");
+        assertEquals(subtask15.getDescription(), subtask15test.getDescription(), "Не верно загружено описание подзадачи 1_5.");
+        assertEquals(subtask15.getEpicId(), subtask15test.getEpicId(), "Не верно загружен id эпика подзадачи 1_5.");
+
         Subtask subtask21test = managerBacked2.getSubtask(subtask21.getId());
         assertEquals(subtask21.getId(), subtask21test.getId(), "Не верно загружен id подзадачи 2_1.");
         assertEquals(subtask21.getName(), subtask21test.getName(), "Не верно загружено наименование подзадачи 2_1.");
@@ -198,5 +290,17 @@ public class FileBackedTaskManagerTest {
         assertEquals(task2.getName(), task2test.getName(), "Не верно загружено наименование задачи 2.");
         assertEquals(task2.getStatus(), task2test.getStatus(), "Не верно загружен статус задачи 2.");
         assertEquals(task2.getDescription(), task2test.getDescription(), "Не верно загружено описание задачи 2.");
+
+        Task task3test = managerBacked2.getTask(task3.getId());
+        assertEquals(task3.getId(), task3test.getId(), "Не верно загружен id задачи 3.");
+        assertEquals(task3.getName(), task3test.getName(), "Не верно загружено наименование задачи 3.");
+        assertEquals(task3.getStatus(), task3test.getStatus(), "Не верно загружен статус задачи 3.");
+        assertEquals(task3.getDescription(), task3test.getDescription(), "Не верно загружено описание задачи 3.");
+
+        Task task4test = managerBacked2.getTask(task4.getId());
+        assertEquals(task4.getId(), task4test.getId(), "Не верно загружен id задачи 4.");
+        assertEquals(task4.getName(), task4test.getName(), "Не верно загружено наименование задачи 4.");
+        assertEquals(task4.getStatus(), task4test.getStatus(), "Не верно загружен статус задачи 4.");
+        assertEquals(task4.getDescription(), task4test.getDescription(), "Не верно загружено описание задачи 4.");
     }
 }

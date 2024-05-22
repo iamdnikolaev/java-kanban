@@ -1,18 +1,21 @@
 package task;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.util.*;
 
 /**
  * Класс эпиков
- * @version 2.6
+ * @version 2.7
  * @author Николаев Д.В.
  */
 public class Epic extends Task {
     /** Поле список id подзадач эпика */
     private List<Integer> subtaskList;
+
+    /**
+     * Расчетное поле даты и времени окончания выполнения
+     */
+    private LocalDateTime endTime;
 
     /** Конструктор эпика с параметрами.
      * @param name название
@@ -41,11 +44,19 @@ public class Epic extends Task {
                 ", id=" + id +
                 ", status=" + status +
                 ", subtaskList=" + subtaskList +
+                ", duration=" + (duration != null ? duration.toMinutes() : null) +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
                 "}";
     }
 
     public ArrayList<Integer> getSubtaskList() {
         return new ArrayList<>(subtaskList);
+    }
+
+    @Override
+    public LocalDateTime getEndTime() {
+        return endTime;
     }
 
     /** Метод обновления статуса эпика согласно статусам его подзадач
@@ -78,6 +89,37 @@ public class Epic extends Task {
         status = newStatus;
     }
 
+    /** Метод обновления атрибутов времени выполнения эпика согласно его подзадач
+     * @param subtasks общее хранилище подзадач, среди которых перебираются свои согласно {@link Epic#subtaskList}*/
+    private void refreshTimes(Map<Integer, Subtask> subtasks) {
+        duration = null;
+        startTime = null;
+        endTime = null;
+        int numberOfSubtasks = subtaskList.size();
+        if (numberOfSubtasks > 0 && subtasks != null) {
+            List<Subtask> subtaskSortedByTime = new ArrayList<>();
+            for (int id : subtaskList) {
+                Subtask subtask = subtasks.get(id);
+                if (subtask.getStartTime() != null) {
+                    subtaskSortedByTime.add(subtask);
+                }
+            }
+            if (!subtaskSortedByTime.isEmpty()) {
+                subtaskSortedByTime.sort(Comparator.comparing(Subtask::getStartTime));
+
+                Subtask firstSubtask = subtaskSortedByTime.getFirst();
+                startTime = firstSubtask.getStartTime();
+
+                Subtask lastSubtask = subtaskSortedByTime.getLast();
+                endTime = lastSubtask.getEndTime();
+
+                duration = firstSubtask.getDuration();
+                subtaskSortedByTime.removeFirst();
+                subtaskSortedByTime.forEach(subtask -> duration = duration.plus(subtask.getDuration()));
+            }
+        }
+    }
+
     /** Метод удаления подзадачи из списка у эпика с обновлением его статуса
      * @param subtaskId идентификатор подзадачи
      * @param subtasks общее хранилище подзадач
@@ -86,6 +128,7 @@ public class Epic extends Task {
         if (subtasks != null && subtaskList.contains(subtaskId)) {
             subtaskList.remove(subtaskId);
             refreshStatus(subtasks);
+            refreshTimes(subtasks);
         }
     }
 
@@ -94,6 +137,7 @@ public class Epic extends Task {
     public void clearSubtasks() {
         subtaskList.clear();
         refreshStatus(null);
+        refreshTimes(null);
     }
 
     /** Метод добавления подзадачи в список у эпика с обновлением его статуса.
@@ -107,6 +151,7 @@ public class Epic extends Task {
                 subtaskList.add(subtask.getId());
             }
             refreshStatus(subtasks);
+            refreshTimes(subtasks);
         }
     }
 }

@@ -1,8 +1,10 @@
 package task;
 
+import java.time.LocalDateTime;
+
 /**
  * Класс подзадач
- * @version 2.0
+ * @version 2.1
  * @author Николаев Д.В.
  */
 public class Subtask extends Task {
@@ -53,6 +55,68 @@ public class Subtask extends Task {
         this.epicId = epicId;
     }
 
+    /**
+     * Конструктор подзадачи с параметрами и атрибутами времени без указания статуса. По умолчанию, NEW.
+     *
+     * @param name        название
+     * @param description описание
+     * @param id          идентификатор
+     * @param epicId      идентификатор эпика
+     * @param duration    продолжительность задачи, мин. - целое число
+     * @param startTime   дата и время начала выполнения
+     */
+    public Subtask(String name, String description, int id, int epicId, Long duration, LocalDateTime startTime) {
+        super(name, description, id, TaskStatus.NEW, duration, startTime);
+        this.epicId = epicId;
+    }
+
+    /**
+     * Конструктор подзадачи с параметрами и атрибутами времени с указанием текущего статуса.
+     *
+     * @param name        название
+     * @param description описание
+     * @param id          идентификатор
+     * @param status      текущий статус
+     * @param epicId      идентификатор эпика
+     * @param duration    продолжительность задачи, мин. - целое число
+     * @param startTime   дата и время начала выполнения
+     */
+    public Subtask(String name, String description, int id, TaskStatus status, int epicId, Long duration,
+                   LocalDateTime startTime) {
+        super(name, description, id, status, duration, startTime);
+        this.epicId = epicId;
+    }
+
+    /**
+     * Конструктор подзадачи со статусом NEW и атрибутами времени, без id для прикладных целей
+     *
+     * @param name        название
+     * @param description описание
+     * @param epicId      идентификатор эпика
+     * @param duration    продолжительность задачи, мин. - целое число
+     * @param startTime   дата и время начала выполнения
+     */
+    public Subtask(String name, String description, int epicId, Long duration, LocalDateTime startTime) {
+        super(name, description, TaskStatus.NEW, duration, startTime);
+        this.epicId = epicId;
+    }
+
+    /**
+     * Конструктор подзадачи с указанием текущего статуса и атрибутами времени, но без id для прикладных целей
+     *
+     * @param name        название
+     * @param description описание
+     * @param status      текущий статус
+     * @param epicId      идентификатор эпика
+     * @param duration    продолжительность задачи, мин. - целое число
+     * @param startTime   дата и время начала выполнения
+     */
+    public Subtask(String name, String description, TaskStatus status, int epicId, Long duration,
+                   LocalDateTime startTime) {
+        super(name, description, status, duration, startTime);
+        this.epicId = epicId;
+    }
+
     public int getEpicId() {
         return epicId;
     }
@@ -65,6 +129,8 @@ public class Subtask extends Task {
                 ", id=" + id +
                 ", status=" + status +
                 ", epicId=" + epicId +
+                ", duration=" + (duration != null ? duration.toMinutes() : null) +
+                ", startTime=" + startTime +
                 '}';
     }
 }

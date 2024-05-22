@@ -175,4 +175,13 @@ public class InMemoryHistoryManager implements HistoryManager {
             taskHistory.remove(id);
         }
     }
+
+    /**
+     * Метод очистки из истории просмотра
+     */
+    public void clear() {
+        taskHistory.clear();
+        first = null;
+        last = null;
+    }
 }
