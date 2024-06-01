@@ -44,11 +44,8 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
                 reqEpicId = reqEpicIdOpt.get();
 
                 String[] pathParts = exchange.getRequestURI().getPath().split("/");
-                try {
-                    if (pathParts[3].equals("subtasks")) {
-                        isSubtasksNeed = true;
-                    }
-                } catch (ArrayIndexOutOfBoundsException e) {
+                if (pathParts.length > 3 && pathParts[3].equals("subtasks")) {
+                    isSubtasksNeed = true;
                 }
             }
 
