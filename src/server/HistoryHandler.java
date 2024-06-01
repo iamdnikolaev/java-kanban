@@ -9,8 +9,9 @@ import java.io.IOException;
 
 /**
  * Обработчик эндпоинта по списку истории просмотра объектов трекера
- * @version 1.0
+ *
  * @author Николаев Д.В.
+ * @version 1.0
  */
 public class HistoryHandler extends BaseHttpHandler implements HttpHandler {
 
@@ -41,6 +42,8 @@ public class HistoryHandler extends BaseHttpHandler implements HttpHandler {
             }
         } catch (Exception e) {
             sendInternalError(exchange, e.getMessage());
+        } finally {
+            exchange.close();
         }
     }
 }

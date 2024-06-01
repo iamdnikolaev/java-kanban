@@ -14,8 +14,9 @@ import java.util.Optional;
 
 /**
  * Обработчик эндпоинта по эпикам трекера
- * @version 1.0
+ *
  * @author Николаев Д.В.
+ * @version 1.0
  */
 public class EpicHandler extends BaseHttpHandler implements HttpHandler {
 
@@ -91,6 +92,8 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
             sendHasInteractions(exchange, e.getMessage());
         } catch (Exception e) {
             sendInternalError(exchange, e.getMessage());
+        } finally {
+            exchange.close();
         }
     }
 }

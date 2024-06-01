@@ -9,8 +9,9 @@ import java.io.IOException;
 
 /**
  * Обработчик эндпоинта по приоретизированному списку задач/подзадач
- * @version 1.0
+ *
  * @author Николаев Д.В.
+ * @version 1.0
  */
 public class PriorityHandler extends BaseHttpHandler implements HttpHandler {
 
@@ -41,6 +42,8 @@ public class PriorityHandler extends BaseHttpHandler implements HttpHandler {
             }
         } catch (Exception e) {
             sendInternalError(exchange, e.getMessage());
+        } finally {
+            exchange.close();
         }
     }
 }

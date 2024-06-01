@@ -14,8 +14,9 @@ import java.util.Optional;
 
 /**
  * Обработчик эндпоинта по подзадачам трекера
- * @version 1.0
+ *
  * @author Николаев Д.В.
+ * @version 1.0
  */
 public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
 
@@ -81,6 +82,8 @@ public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
             sendHasInteractions(exchange, e.getMessage());
         } catch (Exception e) {
             sendInternalError(exchange, e.getMessage());
+        } finally {
+            exchange.close();
         }
     }
 }
