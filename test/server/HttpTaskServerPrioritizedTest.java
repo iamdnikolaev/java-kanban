@@ -53,13 +53,13 @@ public class HttpTaskServerPrioritizedTest {
                 5L, LocalDateTime.now()));
         Subtask subtask2 = manager.createSubtask(new Subtask("Подзадача 2",
                 "Тестовая подзадача 2 для проверки приоритетов", epicInManager.getId(),
-                5L, LocalDateTime.now().minusMinutes(15)));
+                5L, LocalDateTime.now().minusMinutes(20)));
         Subtask subtask3 = manager.createSubtask(new Subtask("Подзадача 3",
                 "Тестовая подзадача 3 для проверки приоритетов", epicInManager.getId(),
-                5L, LocalDateTime.now().minusMinutes(9)));
+                5L, LocalDateTime.now().minusMinutes(10)));
 
         Task task = manager.createTask(new Task("Задача 1",
-                "Тестовая задача 1 для проверки приоритетов", TaskStatus.NEW, 5L, LocalDateTime.now().plusMinutes(15)));
+                "Тестовая задача 1 для проверки приоритетов", TaskStatus.NEW, 5L, LocalDateTime.now().plusMinutes(20)));
         Task task2 = manager.createTask(new Task("Задача 2",
                 "Тестовая задача 2 для проверки приоритетов", TaskStatus.NEW, 5L, LocalDateTime.now().plusMinutes(10)));
 
