@@ -202,18 +202,18 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
         int id = task2.getId();
         taskManager.removeTask(id);
-        Task task2after = taskManager.getTask(id);
-        assertNull(task2after, "Задача 2 не удалена");
+        int finalId = id;
+        assertThrows(NotFoundException.class, () -> {taskManager.getTask(finalId);}, "Задача 2 не удалена");
 
         id = subtask22.getId();
         taskManager.removeSubtask(id);
-        Subtask subtask22after = taskManager.getSubtask(id);
-        assertNull(subtask22after, "Подзадача 2_2 не удалена");
+        int finalId22 = id;
+        assertThrows(NotFoundException.class, () -> {taskManager.getSubtask(finalId22);}, "Подзадача 2_2 не удалена");
 
         id = epic2.getId();
         taskManager.removeEpic(id);
-        Epic epic2after = taskManager.getEpic(id);
-        assertNull(epic2after, "Эпик 2 не удален");
+        int finalId2 = id;
+        assertThrows(NotFoundException.class, () -> {taskManager.getEpic(finalId2);}, "Эпик 2 не удален");
     }
 
     @Test
